@@ -1,47 +1,32 @@
-export default class HolbertonCourse {
-	constructor(name, length, students) {
-		this._name = typeof name === 'string' ? name : '';
-		this._length = typeof length === 'number' ? length : 0;
-		this._students = Array.isArray(students) ? students : [];
+export default class HolbertonClass {
+  constructor(size, location) {
+    this.size = size;
+    this.location = location;
+  }
 
-		// Define getters and setters
-		Object.defineProperty(this, 'name', {
-			get: function() {
-				return this._name;
-			},
-			set: function(value) {
-				if (typeof value === 'string') {
-					this._name = value;
-			} else {
-				console.error('Error: Name must be a string.');
-			}
-		}
-		});
+  get size() {
+    return this._size;
+  }
 
-		Object.defineProperty(this, 'length', {
-			get: function() {
-				return this._length;
-			},
-			set: function(value) {
-				if (typeof value === 'number') {
-					this._length = value;
-				} else {
-					console.error('Error: Length must be a number.');
-				}
-			}
-		});
+  set size(value) {
+    this._size = value;
+  }
 
-		Object.defineProperty(this, 'students', {
-			get: function() {
-				return this._students;
-			},
-			set: function(value) {
-				if (Array.isArray(value)) {
-					this._students = value;
-				} else {
-					console.error('Error: Students must be an array.');
-				}
-			}
-		});
-	}
+  get location() {
+    return this._location;
+  }
+
+  set location(value) {
+    this._location = value;
+  }
+
+  [Symbol.toPrimitive](hint) {
+    if (hint === "number") {
+      return this.size;
+    }
+    if (hint === "string") {
+      return this.location;
+    }
+    return this;
+  }
 }
