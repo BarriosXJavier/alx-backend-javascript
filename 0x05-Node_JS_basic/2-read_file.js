@@ -1,49 +1,27 @@
 const fs = require('fs');
 
-function countStudents(path) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf8', (err, data) => {
-            if (err) {
-                reject(Error('Cannot load the database'));
-                return;
-            }
-            const res = [];
-            let msg;
-
-            const content = data.toString().split('\n');
-
-            let students = content.filter((item) => item);
-
-            students = students.map((item) => item.split(','));
-
-            const NUMBER_OF_STUDENTS = students.length ? students.length - 1 : 0;
-            msg = `Number of students: ${NUMBER_OF_STUDENTS}`;
-            console.log(msg);
-
-            res.push(msg);
-
-            const fields = {};
-            for (const i in students) {
-                if (i !== 0) {
-                    if (!fields[students[i][3]]) fields[students[i][3]] = [];
-
-                    fields[students[i][3]].push(students[i][0]);
-                }
-            }
-
-            delete fields.field;
-
-            for (const key of Object.keys(fields)) {
-                msg = `Number of students in ${key}: ${fields[key].length
-                    }. List: ${fields[key].join(', ')}`;
-
-                console.log(msg);
-
-                res.push(msg);
-            }
-            resolve(res);
-        });
-    });
-}
-
-module.exports = countStudents;
+module.exports = function countStudents(path) {
+    if (!fs.existsSync(path)) {
+        throw Error('Cannot load the database');
+    }
+    // read file
+    const data = fs.readFileSync(path, 'utf8');
+    const dbData = data.split('\n')
+        .map((data) => data.split(','))
+        .filter((data) => data.length === 4 && data[0] !== 'firstname')
+        .map((data) => ({
+            firstName: data[0],
+            lastName: data[1],
+            age: data[2],
+            field: data[3],
+        }));
+    const sweField = dbData
+        .filter((data) => data.field === 'SWE')
+        .map((data) => data.firstName);
+    const csField = dbData
+        .filter((data) => data.field === 'CS')
+        .map((data) => data.firstName);
+    console.log(`Number of students: ${sweField.length + csField.length}`);
+    console.log(`Number of students in CS: ${csField.length}. List: ${csField.join(', ')}`);
+    console.log(`Number of students in SWE: ${sweField.length}. List: ${sweField.join(', ')}`);
+};
